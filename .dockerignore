@@ -1,0 +1,34 @@
+# ---- Git ----
+.git
+.gitignore
+
+# ---- Docker ----
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# ---- Node / Frontend ----
+frontend/node_modules
+frontend/.nuxt
+frontend/.output
+frontend/dist
+frontend/.cache
+
+# ---- Go / Backend ----
+backend/bin
+backend/tmp
+backend/coverage
+backend/*.out
+backend/*.test
+backend/main
+
+# ---- Environment ----
+.env
+.env.*
+
+# ---- Editors / OS ----
+.vscode
+.idea
+*.iml
+.DS_Store
+Thumbs.db

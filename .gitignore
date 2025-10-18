@@ -1,0 +1,47 @@
+# ---- General ----
+.DS_Store
+*.log
+*.tmp
+*.swp
+
+# ---- Environment / Config ----
+.env
+.env.*
+!.env.example
+
+# ---- Dependency directories ----
+/backend/bin/
+/backend/tmp/
+/backend/coverage/
+/frontend/node_modules/
+/frontend/.nuxt/
+/frontend/.output/
+/frontend/dist/
+/frontend/.cache/
+/frontend/.vercel/
+/frontend/.firebase/
+
+# ---- Build outputs ----
+/backend/*.exe
+/backend/*.out
+/backend/*.test
+/backend/coverage.out
+/backend/main
+/frontend/build/
+/frontend/.next/
+
+# ---- Docker ----
+/docker-data/
+/.docker/
+
+# ---- IDE / Editor files ----
+.vscode/
+.idea/
+*.iml
+
+# ---- OS files ----
+Thumbs.db
+
+# ---- Misc ----
+*.bak
+*.old
