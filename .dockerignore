@@ -32,3 +32,4 @@ backend/main
 *.iml
 .DS_Store
 Thumbs.db
+Makefile
