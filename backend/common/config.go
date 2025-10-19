@@ -14,6 +14,7 @@ type Config struct {
 	ENV      string
 	USER_KEY string
 	JWT_KEY  string
+	DB_PATH  string
 }
 
 var (
@@ -57,6 +58,12 @@ func MustLoadConfig() {
 		log.Fatal("JWT_KEY environment variable missing")
 	}
 
+	dbPath, ok := os.LookupEnv("DB_PATH")
+	if !ok {
+		// default location inside backend for development and docker mounts
+		dbPath = "backend/data/app.db"
+	}
+
 	onceCfg.Do(func() {
 		cfg = &Config{
 			ADDR:     arrd,
@@ -64,6 +71,7 @@ func MustLoadConfig() {
 			ENV:      env,
 			USER_KEY: userKey,
 			JWT_KEY:  jwtKey,
+			DB_PATH:  dbPath,
 		}
 	})
 }

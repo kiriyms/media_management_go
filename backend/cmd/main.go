@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"media_management_go/backend/common"
+	"media_management_go/backend/database"
 	"media_management_go/backend/handlers"
 )
 
@@ -16,7 +17,13 @@ func main() {
 	cfg := common.GetConfig()
 	slog.Info("Config loaded")
 	slog.Info("Logger loaded", slog.String("env", cfg.ENV))
-	slog.Debug("Debug logs enabled.")
+	slog.Debug("Debug logs enabled")
+
+	if err := database.Open(cfg.DB_PATH); err != nil {
+		slog.Error("Failed to open database", slog.String("err", err.Error()))
+		return
+	}
+	defer database.Close()
 
 	mux := http.NewServeMux()
 

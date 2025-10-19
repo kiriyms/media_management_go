@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"media_management_go/backend/common"
+	"media_management_go/backend/database"
 	"net/http"
 	"time"
 
@@ -47,7 +48,13 @@ func HandlePostLogin(w http.ResponseWriter, r *http.Request) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signed, err := token.SignedString([]byte(cfg.JWT_KEY))
 	if err != nil {
-		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
+		writeJSONError(w, "Failed to generate token", http.StatusInternalServerError)
+		return
+	}
+
+	// persist the token in sqlite for later introspection / revocation
+	if err := database.InsertToken(signed); err != nil {
+		writeJSONError(w, "Failed to persist token", http.StatusInternalServerError)
 		return
 	}
 
