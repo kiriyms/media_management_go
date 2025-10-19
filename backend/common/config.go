@@ -9,10 +9,11 @@ import (
 )
 
 type Config struct {
-	ADDR string
-	PORT string
-	ENV  string
-	KEY  string
+	ADDR     string
+	PORT     string
+	ENV      string
+	USER_KEY string
+	JWT_KEY  string
 }
 
 var (
@@ -26,7 +27,7 @@ const (
 )
 
 func MustLoadConfig() {
-	err := godotenv.Load()
+	err := godotenv.Load("backend/.env")
 	if err != nil {
 		log.Printf("Failed to load .env file: %v; will look for variables in the environment\n", err)
 	}
@@ -46,17 +47,23 @@ func MustLoadConfig() {
 		log.Fatal("PORT environment variable missing")
 	}
 
-	key, ok := os.LookupEnv("KEY")
+	userKey, ok := os.LookupEnv("USER_KEY")
 	if !ok {
-		log.Fatal("KEY environment variable missing")
+		log.Fatal("USER_KEY environment variable missing")
+	}
+
+	jwtKey, ok := os.LookupEnv("JWT_KEY")
+	if !ok {
+		log.Fatal("JWT_KEY environment variable missing")
 	}
 
 	onceCfg.Do(func() {
 		cfg = &Config{
-			ADDR: arrd,
-			PORT: port,
-			ENV:  env,
-			KEY:  key,
+			ADDR:     arrd,
+			PORT:     port,
+			ENV:      env,
+			USER_KEY: userKey,
+			JWT_KEY:  jwtKey,
 		}
 	})
 }
