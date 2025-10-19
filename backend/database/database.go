@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -10,20 +11,20 @@ import (
 var conn *sql.DB
 
 // Open opens (or returns) the global DB connection. Call once at startup.
-func Open(path string) error {
+func Open(path string) {
 	if conn != nil {
-		return nil
+		return
 	}
 
 	d, err := sql.Open("sqlite3", path+"?_busy_timeout=5000")
 	if err != nil {
-		return fmt.Errorf("open db: %w", err)
+		log.Fatal("Failed to open database:", err)
 	}
 
 	// enable WAL for better concurrent behavior
 	if _, err := d.Exec("PRAGMA journal_mode = WAL;"); err != nil {
 		d.Close()
-		return fmt.Errorf("enable wal: %w", err)
+		log.Fatal("Failed to enable WAL:", err)
 	}
 
 	// create table for stored tokens
@@ -35,11 +36,10 @@ func Open(path string) error {
 
 	if _, err := d.Exec(create); err != nil {
 		d.Close()
-		return fmt.Errorf("create tokens table: %w", err)
+		log.Fatal("Failed to create tokens table:", err)
 	}
 
 	conn = d
-	return nil
 }
 
 // InsertToken stores the JWT token string in the database.

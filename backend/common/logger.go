@@ -1,6 +1,7 @@
 package common
 
 import (
+	"log"
 	"log/slog"
 	"os"
 	"sync"
@@ -39,7 +40,7 @@ func LoadLogger() {
 
 func GetLogger() *slog.Logger {
 	if logger == nil {
-		panic("Global logger not initialized. Call LoadLogger() first.")
+		log.Fatal("Global logger not initialized. Call LoadLogger() first.")
 	}
 	return logger
 }
