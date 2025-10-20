@@ -53,7 +53,7 @@ func HandlePostLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// persist the token in sqlite for later introspection / revocation
-	if err := database.InsertToken(signed); err != nil {
+	if _, err := database.AddToken(signed); err != nil {
 		writeJSONError(w, "Failed to persist token", http.StatusInternalServerError)
 		return
 	}
