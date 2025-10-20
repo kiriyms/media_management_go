@@ -20,6 +20,17 @@ type PostLoginResponse struct {
 	Token string `json:"token"`
 }
 
+type PostLinkRequest struct {
+	Link    string `json:"link"`
+	ImgPath string `json:"img_path"`
+}
+
+type PostLinkResponse struct {
+	ID      string `json:"id"`
+	Link    string `json:"link"`
+	ImgPath string `json:"img_path"`
+}
+
 func HandleGetLogin(w http.ResponseWriter, r *http.Request) {
 	// Validate token and return 200 if valid
 	if claims, ok := requireAuth(w, r); ok {
@@ -79,11 +90,54 @@ func HandlePostLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetLink(w http.ResponseWriter, r *http.Request) {
-	// return all links data for user
+	if _, ok := requireAuth(w, r); !ok {
+		return // requireAuth already wrote error response
+	}
+
+	links, err := database.GetLinks()
+	if err != nil {
+		writeJSONError(w, fmt.Sprintf("Failed to fetch links: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	writeJSON(w, struct {
+		Links []database.Link `json:"links"`
+	}{
+		Links: links,
+	}, http.StatusOK)
 }
 
 func HandlePostLink(w http.ResponseWriter, r *http.Request) {
-	// process new link data for user
+	if _, ok := requireAuth(w, r); !ok {
+		return // requireAuth already wrote error response
+	}
+
+	var req PostLinkRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSONError(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	// Basic validation of required fields
+	if req.Link == "" {
+		writeJSONError(w, "Link is required", http.StatusBadRequest)
+		return
+	}
+
+	// Add link to database
+	id, err := database.AddLink(req.Link, req.ImgPath)
+	if err != nil {
+		writeJSONError(w, fmt.Sprintf("Failed to create link: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Return the created link data
+	resp := PostLinkResponse{
+		ID:      id,
+		Link:    req.Link,
+		ImgPath: req.ImgPath,
+	}
+	writeJSON(w, resp, http.StatusCreated)
 }
 
 func HandleGetNote(w http.ResponseWriter, r *http.Request) {
@@ -106,7 +160,6 @@ func writeJSONError(w http.ResponseWriter, msg string, status int) {
 	}
 	writeJSON(w, errResp{Error: msg}, status)
 }
-
 
 // validateToken extracts and validates the JWT from Authorization header.
 // Returns the parsed claims if token is valid, or error if validation fails.
