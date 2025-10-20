@@ -38,6 +38,7 @@ func MustOpen(path string) {
 		);`,
 		`CREATE TABLE IF NOT EXISTS Note (
 			id TEXT PRIMARY KEY,
+			title TEXT NOT NULL,
 			note TEXT NOT NULL,
 			createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
 			updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -83,15 +84,15 @@ func AddToken(tokenHash string) (string, error) {
 }
 
 // AddNote inserts a sanitized note into Note table. Returns the new record ID.
-func AddNote(note string) (string, error) {
+func AddNote(title, note string) (string, error) {
 	if db == nil {
 		return "", fmt.Errorf("database not initialized")
 	}
 
 	id := uuid.New().String()
 	_, err := db.Exec(
-		`INSERT INTO Note (id, note, createdAt, updatedAt) VALUES (?, ?, ?, ?)`,
-		id, note, time.Now(), time.Now(),
+		`INSERT INTO Note (id, title, note, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)`,
+		id, title, note, time.Now(), time.Now(),
 	)
 	if err != nil {
 		return "", fmt.Errorf("insert note: %w", err)
@@ -250,6 +251,7 @@ func DeleteLink(id string) error {
 // Note represents a single note record.
 type Note struct {
 	ID        string
+	Title     string
 	Note      string
 	CreatedAt string
 	UpdatedAt string

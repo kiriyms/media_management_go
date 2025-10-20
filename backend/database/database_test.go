@@ -63,7 +63,7 @@ func TestAddGetUpdateDeleteNote(t *testing.T) {
 	setupTestDB(t)
 
 	// Create
-	id, err := AddNote("Test note")
+	id, err := AddNote("Test note", "Sample note text")
 	if err != nil {
 		t.Fatalf("AddNote failed: %v", err)
 	}
