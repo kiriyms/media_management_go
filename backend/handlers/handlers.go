@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"media_management_go/backend/common"
 	"media_management_go/backend/database"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -19,7 +21,18 @@ type PostLoginResponse struct {
 }
 
 func HandleGetLogin(w http.ResponseWriter, r *http.Request) {
-	// validate session token or cookie
+	// Validate token and return 200 if valid
+	if claims, ok := requireAuth(w, r); ok {
+		writeJSON(w, struct {
+			Subject   string    `json:"subject"`
+			IssuedAt  time.Time `json:"issued_at"`
+			ExpiresAt time.Time `json:"expires_at"`
+		}{
+			Subject:   claims.Subject,
+			IssuedAt:  claims.IssuedAt.Time,
+			ExpiresAt: claims.ExpiresAt.Time,
+		}, http.StatusOK)
+	}
 }
 
 func HandlePostLogin(w http.ResponseWriter, r *http.Request) {
@@ -92,4 +105,58 @@ func writeJSONError(w http.ResponseWriter, msg string, status int) {
 		Error string `json:"error"`
 	}
 	writeJSON(w, errResp{Error: msg}, status)
+}
+
+
+// validateToken extracts and validates the JWT from Authorization header.
+// Returns the parsed claims if token is valid, or error if validation fails.
+func validateToken(r *http.Request) (*jwt.RegisteredClaims, error) {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		return nil, fmt.Errorf("missing Authorization header")
+	}
+
+	const prefix = "Bearer "
+	if !strings.HasPrefix(authHeader, prefix) {
+		return nil, fmt.Errorf("invalid Authorization header format")
+	}
+
+	tokenStr := strings.TrimPrefix(authHeader, prefix)
+	if tokenStr == "" {
+		return nil, fmt.Errorf("empty token")
+	}
+
+	// Parse and validate JWT signature
+	claims := &jwt.RegisteredClaims{}
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (interface{}, error) {
+		if t.Method.Alg() != jwt.SigningMethodHS256.Alg() {
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Method.Alg())
+		}
+		return []byte(common.GetConfig().JWT_KEY), nil
+	})
+
+	if err != nil || !token.Valid {
+		return nil, fmt.Errorf("invalid token: %v", err)
+	}
+
+	// Verify token exists in database
+	storedToken, err := database.GetToken(tokenStr)
+	if err != nil {
+		return nil, fmt.Errorf("database error: %v", err)
+	}
+	if storedToken == nil {
+		return nil, fmt.Errorf("token not found in database")
+	}
+
+	return claims, nil
+}
+
+// requireAuth is a helper that validates the token and writes error response if invalid
+func requireAuth(w http.ResponseWriter, r *http.Request) (*jwt.RegisteredClaims, bool) {
+	claims, err := validateToken(r)
+	if err != nil {
+		writeJSONError(w, err.Error(), http.StatusUnauthorized)
+		return nil, false
+	}
+	return claims, true
 }
