@@ -13,6 +13,7 @@
 /backend/bin/
 /backend/tmp/
 /backend/coverage/
+/backend/database/*.db
 /frontend/node_modules/
 /frontend/.nuxt/
 /frontend/.output/

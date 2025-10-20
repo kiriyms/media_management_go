@@ -19,10 +19,7 @@ func main() {
 	slog.Info("Logger loaded", slog.String("env", cfg.ENV))
 	slog.Debug("Debug logs enabled")
 
-	if err := database.Open(cfg.DB_PATH); err != nil {
-		slog.Error("Failed to open database", slog.String("err", err.Error()))
-		return
-	}
+	database.MustOpen(cfg.DB_PATH)
 	defer database.Close()
 
 	mux := http.NewServeMux()

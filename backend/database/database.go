@@ -10,8 +10,8 @@ import (
 
 var conn *sql.DB
 
-// Open opens (or returns) the global DB connection. Call once at startup.
-func Open(path string) {
+// MustOpen opens the global DB connection. Call once at startup.
+func MustOpen(path string) {
 	if conn != nil {
 		return
 	}
