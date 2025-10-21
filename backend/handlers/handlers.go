@@ -141,7 +141,21 @@ func HandlePostLink(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetNote(w http.ResponseWriter, r *http.Request) {
-	// return all notes data for user
+	if _, ok := requireAuth(w, r); !ok {
+		return // requireAuth already wrote error response
+	}
+
+	notes, err := database.GetNotes()
+	if err != nil {
+		writeJSONError(w, fmt.Sprintf("Failed to fetch notes: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	writeJSON(w, struct {
+		Notes []database.Note `json:"notes"`
+	}{
+		Notes: notes,
+	}, http.StatusOK)
 }
 
 func HandlePostNote(w http.ResponseWriter, r *http.Request) {
