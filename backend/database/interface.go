@@ -4,7 +4,7 @@ package database
 type Database interface {
 	// Insert functions
 	AddToken(tokenHash string) (string, error)
-	AddNote(note string) (string, error)
+	AddNote(title, note string) (string, error)
 	AddLink(link, imgPath string) (string, error)
 
 	// Retrieval functions
