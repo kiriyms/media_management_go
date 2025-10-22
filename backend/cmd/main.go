@@ -90,6 +90,17 @@ func main() {
 		handlers.HandlePostNote(w, r)
 	})
 
+	mux.HandleFunc("PUT /note", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/note" {
+			http.NotFound(w, r)
+			slog.Info("Note endpoint not processed", slog.String("expected", "/note"), slog.String("received", r.URL.Path))
+			return
+		}
+
+		slog.Info("Processing PUT note request")
+		handlers.HandlePutNote(w, r)
+	})
+
 	addr := fmt.Sprintf("%s:%s", cfg.ADDR, cfg.PORT)
 	slog.Info("Server is running.", slog.String("addr", "http://"+addr))
 	http.ListenAndServe(addr, mux)

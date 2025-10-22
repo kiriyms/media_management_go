@@ -189,9 +189,9 @@ func GetLinks() ([]Link, error) {
 //
 
 // UpdateNote updates an existing note and refreshes updatedAt.
-func UpdateNote(id, newNote string) error {
+func UpdateNote(id, newNote string) (Note, error) {
 	if db == nil {
-		return fmt.Errorf("database not initialized")
+		return Note{}, fmt.Errorf("database not initialized")
 	}
 
 	_, err := db.Exec(
@@ -199,9 +199,13 @@ func UpdateNote(id, newNote string) error {
 		newNote, time.Now(), id,
 	)
 	if err != nil {
-		return fmt.Errorf("update note: %w", err)
+		return Note{}, fmt.Errorf("update note: %w", err)
 	}
-	return nil
+	return Note{
+		ID:        id,
+		Note:      newNote,
+		UpdatedAt: time.Now().Format(time.RFC3339),
+	}, nil
 }
 
 //

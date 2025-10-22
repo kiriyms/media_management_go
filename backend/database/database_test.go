@@ -78,7 +78,7 @@ func TestAddGetUpdateDeleteNote(t *testing.T) {
 	}
 
 	// Update
-	err = UpdateNote(id, "Updated note text")
+	_, err = UpdateNote(id, "Updated note text")
 	if err != nil {
 		t.Fatalf("UpdateNote failed: %v", err)
 	}

@@ -42,6 +42,17 @@ type PostNoteResponse struct {
 	Note  string `json:"note"`
 }
 
+type PutNoteRequest struct {
+	ID   string `json:"id"`
+	Note string `json:"note"`
+}
+
+type PutNoteResponse struct {
+	ID        string `json:"id"`
+	Note      string `json:"note"`
+	UpdatedAt string `json:"updated_at"`
+}
+
 func HandleGetLogin(w http.ResponseWriter, r *http.Request) {
 	// Validate token and return 200 if valid
 	if claims, ok := requireAuth(w, r); ok {
@@ -197,6 +208,36 @@ func HandlePostNote(w http.ResponseWriter, r *http.Request) {
 		Note:  req.Note,
 	}
 	writeJSON(w, resp, http.StatusCreated)
+}
+
+func HandlePutNote(w http.ResponseWriter, r *http.Request) {
+	if _, ok := requireAuth(w, r); !ok {
+		return // requireAuth already wrote error response
+	}
+
+	var req PutNoteRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSONError(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	if req.Note == "" {
+		writeJSONError(w, "Note is required", http.StatusBadRequest)
+		return
+	}
+
+	note, err := database.UpdateNote(req.ID, req.Note)
+	if err != nil {
+		writeJSONError(w, fmt.Sprintf("Failed to update note: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	resp := PutNoteResponse{
+		ID:        note.ID,
+		Note:      note.Note,
+		UpdatedAt: note.UpdatedAt,
+	}
+	writeJSON(w, resp, http.StatusOK)
 }
 
 func writeJSON(w http.ResponseWriter, v interface{}, status int) {
