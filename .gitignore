@@ -23,6 +23,12 @@
 /frontend/.cache/
 /frontend/.vercel/
 /frontend/.firebase/
+/frontend/.data
+/frontend/.nitro
+/frontend/logs
+/frontend/.DS_Store
+/frontend/.fleet
+/frontend/.idea
 
 # ---- Build outputs ----
 /backend/*.exe
