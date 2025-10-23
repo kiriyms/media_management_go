@@ -10,6 +10,15 @@ import (
 	"media_management_go/backend/handlers"
 )
 
+func enableCORS(w http.ResponseWriter, r *http.Request) {
+	// You might want to restrict this to a specific origin instead of "*"
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	// If you expect to allow cookies or auth headers:
+	// w.Header().Set("Access-Control-Allow-Credentials", "true")
+}
+
 func main() {
 	common.MustLoadConfig()
 	common.LoadLogger()
@@ -24,7 +33,14 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("OPTIONS /login", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r)
+		w.WriteHeader(http.StatusOK)
+	})
+
 	mux.HandleFunc("GET /login", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r)
+
 		if r.URL.Path != "/login" {
 			http.NotFound(w, r)
 			slog.Info("Login endpoint not processed", slog.String("expected", "/login"), slog.String("received", r.URL.Path))
@@ -36,6 +52,8 @@ func main() {
 	})
 
 	mux.HandleFunc("POST /login", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r)
+
 		if r.URL.Path != "/login" {
 			http.NotFound(w, r)
 			slog.Info("Login endpoint not processed", slog.String("expected", "/login"), slog.String("received", r.URL.Path))
@@ -47,6 +65,8 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /link", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r)
+
 		if r.URL.Path != "/link" {
 			http.NotFound(w, r)
 			slog.Info("Link endpoint not processed", slog.String("expected", "/link"), slog.String("received", r.URL.Path))
@@ -58,6 +78,8 @@ func main() {
 	})
 
 	mux.HandleFunc("POST /link", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r)
+
 		if r.URL.Path != "/link" {
 			http.NotFound(w, r)
 			slog.Info("Link endpoint not processed", slog.String("expected", "/link"), slog.String("received", r.URL.Path))
@@ -69,6 +91,8 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /note", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r)
+
 		if r.URL.Path != "/note" {
 			http.NotFound(w, r)
 			slog.Info("Note endpoint not processed", slog.String("expected", "/note"), slog.String("received", r.URL.Path))
@@ -80,6 +104,8 @@ func main() {
 	})
 
 	mux.HandleFunc("POST /note", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r)
+
 		if r.URL.Path != "/note" {
 			http.NotFound(w, r)
 			slog.Info("Note endpoint not processed", slog.String("expected", "/note"), slog.String("received", r.URL.Path))
@@ -91,6 +117,8 @@ func main() {
 	})
 
 	mux.HandleFunc("PUT /note", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r)
+
 		if r.URL.Path != "/note" {
 			http.NotFound(w, r)
 			slog.Info("Note endpoint not processed", slog.String("expected", "/note"), slog.String("received", r.URL.Path))
