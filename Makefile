@@ -10,3 +10,6 @@ test:
 
 push:
 	@git push origin main
+
+fe.run:
+	@cd frontend && npm run dev
