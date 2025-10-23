@@ -2,10 +2,34 @@
 import { ref } from 'vue';
 
 const passkey = ref('');
-const handleSubmit = (e: Event) => {
+const handleSubmit = async (e: Event) => {
     e.preventDefault();
-    // Handle passkey submit logic here
-    alert(`Passkey submitted: ${passkey.value}`);
+
+    try {
+        const res = await fetch('http://localhost:8080/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ key: passkey.value }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            if (data && data.token) {
+                localStorage.setItem('session_token', data.token);
+                // you may want to redirect or update UI here
+            } else {
+                console.error('No token in response', data);
+            }
+        } else {
+            // expected error shape: { error: 'message' }
+            console.error('Login error:', data?.error ?? data);
+        }
+    } catch (err) {
+        console.error('Network or unexpected error:', err);
+    }
 };
 </script>
 
