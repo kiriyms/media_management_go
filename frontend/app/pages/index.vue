@@ -48,13 +48,11 @@ const handleSubmit = async (e: Event) => {
         class="
             flex items-center justify-center
             min-h-screen
-            bg-gray-50
         "
     >
         <form
             @submit="handleSubmit"
             class="
-                bg-white
                 p-8
                 rounded
                 shadow-md
@@ -63,13 +61,13 @@ const handleSubmit = async (e: Event) => {
                 gap-4
             "
         >
-            <label for="passkey" class="text-gray-700 font-semibold">Passkey</label>
+            <label for="passkey" class="font-semibold">Passkey</label>
             <input
                 id="passkey"
                 v-model="passkey"
                 type="password"
                 class="
-                    border border-gray-300
+                    border
                     rounded
                     px-3 py-2
                     focus:outline-none focus:ring-2 focus:ring-blue-400
@@ -92,7 +90,6 @@ const handleSubmit = async (e: Event) => {
                 :disabled="isLoading"
                 class="
                     bg-blue-600 
-                    text-white 
                     rounded px-4 py-2 
                     hover:bg-blue-700 
                     disabled:opacity-50

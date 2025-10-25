@@ -15,12 +15,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/json',
       },
-      // don't automatically follow redirects -- let us handle non-200s
       redirect: 'manual',
     })
 
     if (res.status === 200) {
-        return
+      return
     }
 
     return navigateTo('/')

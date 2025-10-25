@@ -4,7 +4,8 @@ definePageMeta({ middleware: 'auth' })
 </script>
 
 <template>
-  <div class="p-8">
-    <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
+  <div class="p-8 flex gap-8 h-screen">
+    <Links></Links>
+    <Notes></Notes>
   </div>
 </template>
