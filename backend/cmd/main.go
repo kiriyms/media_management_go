@@ -33,7 +33,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("OPTIONS /login", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("OPTIONS /", func(w http.ResponseWriter, r *http.Request) {
 		enableCORS(w, r)
 		w.WriteHeader(http.StatusOK)
 	})

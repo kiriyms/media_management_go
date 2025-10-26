@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { useRouter } from '#app';
 
-const router = useRouter();
 const passkey = ref('');
 const isLoading = ref(false);
 const errorMessage = ref('');
@@ -27,7 +25,7 @@ const handleSubmit = async (e: Event) => {
         if (res.ok) {
             if (data && data.token) {
                 localStorage.setItem('session_token', data.token);
-                router.push('/dash');
+                navigateTo('/dash');
             } else {
                 errorMessage.value = 'Invalid server response: No token received';
             }
