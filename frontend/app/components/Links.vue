@@ -15,11 +15,15 @@ const newLinkUrl = ref('')
 const selectedIcon = ref('')
 
 const iconOptions = [
-    { value: 'youtube.png', label: 'YouTube', icon: 'i-logos-youtube-icon' },
-    { value: 'github.png', label: 'GitHub', icon: 'i-logos-github-icon' },
-    { value: 'twitter.png', label: 'Twitter', icon: 'i-logos-twitter' },
-    { value: 'linkedin.png', label: 'LinkedIn', icon: 'i-logos-linkedin-icon' },
-    { value: 'instagram.png', label: 'Instagram', icon: 'i-logos-instagram-icon' }
+    { value: 'youtube.png', label: 'YouTube', icon: 'ri:youtube-fill' },
+    { value: 'github.png', label: 'GitHub', icon: 'mdi:github' },
+    { value: 'twitter.png', label: 'Twitter', icon: 'mdi:twitter' },
+    { value: 'linkedin.png', label: 'LinkedIn', icon: 'mdi:linkedin' },
+    { value: 'instagram.png', label: 'Instagram', icon: 'mdi:instagram' },
+    { value: 'meetup.png', label: 'Meetup', icon: 'simple-icons:meetup' },
+    { value: 'slack.png', label: 'Slack', icon: 'mdi:slack' },
+    { value: 'discord.png', label: 'Discord', icon: 'ic:baseline-discord' },
+    { value: 'global.png', label: 'Website', icon: 'solar:global-line-duotone' },
 ]
 
 // Using a computed ref to store the auth token
