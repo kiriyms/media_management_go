@@ -60,6 +60,39 @@ const fetchLinks = async () => {
     }
 }
 
+const submitNewLink = async () => {
+    if (!authToken.value || !newLinkUrl.value || !selectedIcon.value) {
+        return
+    }
+
+    pending.value = true
+    try {
+        const response = await $fetch('http://localhost:8080/link', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${authToken.value}`,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                link: newLinkUrl.value,
+                img_path: selectedIcon.value
+            }
+        })
+
+        // Clear form
+        newLinkUrl.value = ''
+        selectedIcon.value = ''
+        showModal.value = false
+
+        // Refresh links list
+        await fetchLinks()
+    } catch (error) {
+        console.error('Failed to create link:', error)
+    } finally {
+        pending.value = false
+    }
+}
+
 // Fetch links when component mounts
 onMounted(() => {
     console.log('Component mounted, fetching links...')
@@ -85,7 +118,11 @@ onMounted(() => {
             <div v-if="pending" class="w-4 h-4 border-2 border-gray-950/80 border-t-transparent rounded-full animate-spin"></div>
             <UModal
                 v-model="showModal"
-                prevent-close
+                :close="{
+                    color: 'neutral',
+                    variant: 'outline',
+                }"
+                title="Add New Link"
             >
                 <UButton 
                     icon="material-symbols:add-2-rounded"
@@ -93,15 +130,8 @@ onMounted(() => {
                     color="neutral"
                     variant="outline"
                 />
-
-                <template #header>
-                    <div class="text-xl font-semibold">
-                        Add New Link
-                    </div>
-                </template>
-
                 <template #body>
-                    <form @submit.prevent class="flex flex-col gap-4 p-4">
+                    <form class="flex flex-col gap-4 p-4">
                         <UFormGroup label="Link URL">
                             <UInput
                                 v-model="newLinkUrl"
@@ -117,9 +147,9 @@ onMounted(() => {
                                     v-for="option in iconOptions"
                                     :key="option.value"
                                     :class="{
-                                        'ring-2 ring-primary-500': selectedIcon === option.value
+                                        'ring-2 ring-primary-500': selectedIcon === option.icon
                                     }"
-                                    @click="selectedIcon = option.value"
+                                    @click="selectedIcon = option.icon"
                                     variant="ghost"
                                     :title="option.label"
                                 >
@@ -136,14 +166,10 @@ onMounted(() => {
                 <template #footer>
                     <div class="flex justify-end gap-2">
                         <UButton
-                            color="neutral"
-                            variant="soft"
-                            @click="showModal = false"
-                        >
-                            Cancel
-                        </UButton>
-                        <UButton
+                            @click.prevent="submitNewLink"
+                            type="submit"
                             color="primary"
+                            :loading="pending"
                             :disabled="!newLinkUrl || !selectedIcon"
                         >
                             Add Link
@@ -182,10 +208,10 @@ onMounted(() => {
                 :key="link.ID"
                 class="w-full bg-gray-700 p-2 rounded-md flex items-center gap-2"
             >
-                <div 
+                <UIcon 
                     v-if="link.ImgPath" 
-                    class="w-10 h-10 bg-cover bg-center bg-no-repeat rounded-md"
-                    :style="{ backgroundImage: `url(${link.ImgPath})` }"
+                    :name="link.ImgPath"
+                    class="size-10"
                 />
                 <div v-else class="w-10 h-10 bg-red-800 rounded-md" />
                 <a 
