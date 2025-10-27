@@ -54,8 +54,9 @@ const fetchNotes = async () => {
         items.value = notesData.value?.map((note) => ({
             label: note.title,
             description: note.note,
-            slot: note.note
+            slot: note.id
         }))
+        console.log('Populated items:', items.value)
     } catch (error) {
         console.error('Failed to fetch notes:', error)
     } finally {
