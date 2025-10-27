@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"log/slog"
 	"time"
 
 	"github.com/google/uuid"
@@ -89,10 +90,12 @@ func AddNote(title, note string) (string, error) {
 		return "", fmt.Errorf("database not initialized")
 	}
 
+	slog.Debug("Inserting Note", slog.String("Title", title), slog.String("Note", note))
+
 	id := uuid.New().String()
 	_, err := db.Exec(
-		`INSERT INTO Note (id, title, note, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)`,
-		id, title, note, time.Now(), time.Now(),
+		`INSERT INTO Note (id, note, createdAt, updatedAt, title) VALUES (?, ?, ?, ?, ?)`,
+		id, note, time.Now(), time.Now(), title,
 	)
 	if err != nil {
 		return "", fmt.Errorf("insert note: %w", err)
@@ -144,7 +147,7 @@ func GetNotes() ([]Note, error) {
 		return nil, fmt.Errorf("database not initialized")
 	}
 
-	rows, err := db.Query(`SELECT id, note, createdAt, updatedAt FROM Note ORDER BY createdAt DESC`)
+	rows, err := db.Query(`SELECT id, note, createdAt, updatedAt, title FROM Note ORDER BY createdAt DESC`)
 	if err != nil {
 		return nil, fmt.Errorf("query notes: %w", err)
 	}
@@ -153,7 +156,7 @@ func GetNotes() ([]Note, error) {
 	var notes []Note
 	for rows.Next() {
 		var n Note
-		if err := rows.Scan(&n.ID, &n.Note, &n.CreatedAt, &n.UpdatedAt); err != nil {
+		if err := rows.Scan(&n.ID, &n.Note, &n.CreatedAt, &n.UpdatedAt, &n.Title); err != nil {
 			return nil, fmt.Errorf("scan note: %w", err)
 		}
 		notes = append(notes, n)
