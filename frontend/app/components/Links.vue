@@ -2,11 +2,11 @@
 import { ref } from 'vue'
 
 interface Link {
-    ID: string;
-    Link: string;
-    ImgPath: string;
-    CreatedAt: string;
-    UpdatedAt: string;
+    id: string;
+    link: string;
+    imgPath: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 const pending = ref(false)
@@ -35,16 +35,13 @@ const authToken = computed(() => {
 })
 
 // Use Nuxt's built-in state management with useFetch
-const { data: linksData, refresh } = useFetch('http://localhost:8080/link', {
+const { data: linksData, refresh } = useFetch<{ links: Link[] }>('http://localhost:8080/link', {
     headers: computed(() => ({
         'Authorization': `Bearer ${authToken.value}`
     })),
     key: 'links-data',
-    transform: (response: any) => response?.links as Link[],
     cache: 'no-store'
 })
-
-const links = computed(() => linksData.value || [])
 
 // Wrapper function to handle the loading state
 const fetchLinks = async () => {
@@ -56,7 +53,7 @@ const fetchLinks = async () => {
     pending.value = true
     try {
         await refresh()
-        console.log('Fetched links:', links.value)
+        console.log('Fetched links:', linksData.value)
     } catch (error) {
         console.error('Failed to fetch links:', error)
     } finally {
@@ -136,34 +133,30 @@ onMounted(() => {
                 />
                 <template #body>
                     <form class="flex flex-col gap-4 p-4">
-                        <UFormGroup label="Link URL">
-                            <UInput
-                                v-model="newLinkUrl"
-                                placeholder="https://example.com"
-                                type="url"
-                                required
-                            />
-                        </UFormGroup>
+                        <UInput
+                            v-model="newLinkUrl"
+                            placeholder="https://example.com"
+                            type="url"
+                            required
+                        />
 
-                        <UFormGroup label="Choose Icon">
-                            <div class="grid grid-cols-5 gap-2">
-                                <UButton
-                                    v-for="option in iconOptions"
-                                    :key="option.value"
-                                    :class="{
-                                        'ring-2 ring-primary-500': selectedIcon === option.icon
-                                    }"
-                                    @click="selectedIcon = option.icon"
-                                    variant="ghost"
-                                    :title="option.label"
-                                >
-                                    <UIcon
-                                        :name="option.icon"
-                                        class="text-2xl"
-                                    />
-                                </UButton>
-                            </div>
-                        </UFormGroup>
+                        <div class="grid grid-cols-5 gap-2">
+                            <UButton
+                                v-for="option in iconOptions"
+                                :key="option.value"
+                                :class="{
+                                    'ring-2 ring-primary-500': selectedIcon === option.icon
+                                }"
+                                @click="selectedIcon = option.icon"
+                                variant="ghost"
+                                :title="option.label"
+                            >
+                                <UIcon
+                                    :name="option.icon"
+                                    class="text-2xl"
+                                />
+                            </UButton>
+                        </div>
                     </form>
                 </template>
 
@@ -208,26 +201,26 @@ onMounted(() => {
                 pt-2 flex flex-col gap-2 overflow-auto h-[90%]
             ">
             <li 
-                v-for="link in links" 
-                :key="link.ID"
+                v-for="link in linksData?.links" 
+                :key="link.id"
                 class="w-full bg-gray-700 p-2 rounded-md flex items-center gap-2"
             >
                 <UIcon 
-                    v-if="link.ImgPath" 
-                    :name="link.ImgPath"
+                    v-if="link.imgPath" 
+                    :name="link.imgPath"
                     class="size-10"
                 />
                 <div v-else class="w-10 h-10 bg-red-800 rounded-md" />
                 <a 
-                    :href="link.Link" 
+                    :href="link.link" 
                     target="_blank"
                     rel="noopener noreferrer"
                     class="flex-1 text-blue-500 hover:underline overflow-auto"
                 >
-                    {{ link.Link }}
+                    {{ link.link }}
                 </a>
                 <div class="text-xs text-white light:text-black">
-                    {{ new Date(link.CreatedAt).toLocaleDateString() }}
+                    {{ new Date(link.createdAt).toLocaleDateString() }}
                 </div>
             </li>
         </ul>
