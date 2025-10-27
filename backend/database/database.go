@@ -254,28 +254,28 @@ func DeleteLink(id string) error {
 
 // Note represents a single note record.
 type Note struct {
-	ID        string
-	Title     string
-	Note      string
-	CreatedAt string
-	UpdatedAt string
+	ID        string `json:"id"`
+	Title     string `json:"title"`
+	Note      string `json:"note"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 // Link represents a single link record.
 type Link struct {
-	ID        string
-	Link      string
-	ImgPath   string
-	CreatedAt string
-	UpdatedAt string
+	ID        string `json:"id"`
+	Link      string `json:"link"`
+	ImgPath   string `json:"imgPath"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 // Token represents a session token record.
 type Token struct {
-	ID        string
-	TokenHash string
-	CreatedAt string
-	UpdatedAt string
+	ID        string `json:"id"`
+	TokenHash string `json:"tokenHash"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 //
