@@ -108,53 +108,61 @@ onMounted(async () => {
             flex-1 h-full
             bg-gray-800
             rounded-2xl p-4
-            flex
+            flex flex-col justify-between
         ">
-        <UTabs :items="items" variant="link" class="gap-4 w-full">
-            <template #note="{ item }">
-                <div class="w-full h-full bg-red-500">
-                    <div>{{ item.description }}</div>
-                </div>
-            </template>
-        </UTabs>
-        <UModal
-            v-model="showModal"
-            :close="{
-                color: 'neutral',
-                variant: 'outline',
-            }"
-            title="Add New Link"
-        >
-            <UButton 
-                icon="material-symbols:add-2-rounded"
-                class="hover:text-gray-400 transition-colors h-8"
-                color="neutral"
-                variant="outline"
-            />
-            <template #body>
-                <form class="flex flex-col gap-4 p-4">
-                    <UInput
-                        v-model="newNoteTitle"
-                        placeholder="Note Title"
-                        type="text"
-                        required
-                    />
-                </form>
-            </template>
-
-            <template #footer>
-                <div class="flex justify-end gap-2">
-                    <UButton
-                        @click.prevent="submitNewNote"
-                        type="submit"
-                        color="primary"
-                        :loading="pending"
-                        :disabled="!newNoteTitle"
-                    >
-                        Add Note
-                    </UButton>
-                </div>
-            </template>
-        </UModal>
+        <div class="flex h-full">
+            <UTabs :items="items" variant="link" class="gap-4 w-full h-full" :ui="{ content: 'h-full' }">
+                <template #note="{ item }">
+                    <div class="w-full h-full bg-blue-500 flex flex-col">
+                        <div class="w-full h-full bg-red-500">
+                            <div>{{ item.description }}</div>
+                        </div>
+                        <div class="flex justify-between">
+                            <UButton label="DELETE NOTE" color="error" />
+                            <UButton label="SAVE CHANGES" color="success" />
+                        </div>
+                    </div>
+                </template>
+            </UTabs>
+            <UModal
+                v-model="showModal"
+                :close="{
+                    color: 'neutral',
+                    variant: 'outline',
+                }"
+                title="Add New Link"
+            >
+                <UButton 
+                    icon="material-symbols:add-2-rounded"
+                    class="hover:text-gray-400 transition-colors h-8"
+                    color="neutral"
+                    variant="outline"
+                />
+                <template #body>
+                    <form class="flex flex-col gap-4 p-4">
+                        <UInput
+                            v-model="newNoteTitle"
+                            placeholder="Note Title"
+                            type="text"
+                            required
+                        />
+                    </form>
+                </template>
+    
+                <template #footer>
+                    <div class="flex justify-end gap-2">
+                        <UButton
+                            @click.prevent="submitNewNote"
+                            type="submit"
+                            color="primary"
+                            :loading="pending"
+                            :disabled="!newNoteTitle"
+                        >
+                            Add Note
+                        </UButton>
+                    </div>
+                </template>
+            </UModal>
+        </div>
     </div>
 </template>
