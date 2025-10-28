@@ -64,6 +64,38 @@ const fetchNotes = async () => {
     }
 }
 
+const submitNewNote = async () => {
+    if (!authToken.value || !newNoteTitle.value) {
+        return
+    }
+
+    pending.value = true
+    try {
+        const response = await $fetch('http://localhost:8080/note', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${authToken.value}`,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                title: newNoteTitle.value,
+                note: ' ',
+            }
+        })
+
+        // Clear form
+        newNoteTitle.value = ''
+        showModal.value = false
+
+        // Refresh notes list
+        await fetchNotes()
+    } catch (error) {
+        console.error('Failed to create note:', error)
+    } finally {
+        pending.value = false
+    }
+}
+
 onMounted(async () => {
     console.log('Component mounted, fetching notes...')
     fetchNotes()
@@ -76,6 +108,7 @@ onMounted(async () => {
             flex-1 h-full
             bg-gray-800
             rounded-2xl p-4
+            flex
         ">
         <UTabs :items="items" variant="link" class="gap-4 w-full">
             <template #note="{ item }">
@@ -85,5 +118,44 @@ onMounted(async () => {
                 </div>
             </template>
         </UTabs>
+        <UModal
+            v-model="showModal"
+            :close="{
+                color: 'neutral',
+                variant: 'outline',
+            }"
+            title="Add New Link"
+        >
+            <UButton 
+                icon="material-symbols:add-2-rounded"
+                class="hover:text-gray-400 transition-colors h-8"
+                color="neutral"
+                variant="outline"
+            />
+            <template #body>
+                <form class="flex flex-col gap-4 p-4">
+                    <UInput
+                        v-model="newNoteTitle"
+                        placeholder="Note Title"
+                        type="text"
+                        required
+                    />
+                </form>
+            </template>
+
+            <template #footer>
+                <div class="flex justify-end gap-2">
+                    <UButton
+                        @click.prevent="submitNewNote"
+                        type="submit"
+                        color="primary"
+                        :loading="pending"
+                        :disabled="!newNoteTitle"
+                    >
+                        Add Note
+                    </UButton>
+                </div>
+            </template>
+        </UModal>
     </div>
 </template>
