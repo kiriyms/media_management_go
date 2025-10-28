@@ -113,8 +113,8 @@ onMounted(async () => {
         <div class="flex h-full">
             <UTabs :items="items" variant="link" class="gap-4 w-full h-full" :ui="{ content: 'h-full' }">
                 <template #note="{ item }">
-                    <div class="w-full h-full bg-blue-500 flex flex-col">
-                        <div class="w-full h-full bg-red-500">
+                    <div class="w-full h-full flex flex-col">
+                        <div class="w-full h-full">
                             <div>{{ item.description }}</div>
                         </div>
                         <div class="flex justify-between">
