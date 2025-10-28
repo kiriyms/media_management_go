@@ -54,7 +54,7 @@ const fetchNotes = async () => {
         items.value = notesData.value?.map((note) => ({
             label: note.title,
             description: note.note,
-            slot: note.id
+            slot: 'note'
         }))
         console.log('Populated items:', items.value)
     } catch (error) {
@@ -112,8 +112,7 @@ onMounted(async () => {
         ">
         <UTabs :items="items" variant="link" class="gap-4 w-full">
             <template #note="{ item }">
-                <div class="">
-                    <div class="font-bold text-lg mb-2">{{ item.label }}</div>
+                <div class="w-full h-full bg-red-500">
                     <div>{{ item.description }}</div>
                 </div>
             </template>
