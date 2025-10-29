@@ -53,6 +53,10 @@ type PutNoteResponse struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
+type DeleteNoteRequest struct {
+	ID string `json:"id"`
+}
+
 func HandleGetLogin(w http.ResponseWriter, r *http.Request) {
 	// Validate token and return 200 if valid
 	if claims, ok := requireAuth(w, r); ok {
@@ -238,6 +242,34 @@ func HandlePutNote(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt: note.UpdatedAt,
 	}
 	writeJSON(w, resp, http.StatusOK)
+}
+
+func HandleDeleteNote(w http.ResponseWriter, r *http.Request) {
+	if _, ok := requireAuth(w, r); !ok {
+		return // requireAuth already wrote error response
+	}
+
+	var req DeleteNoteRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSONError(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	if req.ID == "" {
+		writeJSONError(w, "ID is required", http.StatusBadRequest)
+		return
+	}
+
+	if err := database.DeleteNote(req.ID); err != nil {
+		writeJSONError(w, fmt.Sprintf("Failed to delete note: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	writeJSON(w, struct {
+		Message string `json:"message"`
+	}{
+		Message: "Note deleted successfully",
+	}, http.StatusOK)
 }
 
 func writeJSON(w http.ResponseWriter, v interface{}, status int) {

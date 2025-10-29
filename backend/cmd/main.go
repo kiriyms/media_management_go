@@ -129,6 +129,19 @@ func main() {
 		handlers.HandlePutNote(w, r)
 	})
 
+	mux.HandleFunc("DELETE /note", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r)
+
+		if r.URL.Path != "/note" {
+			http.NotFound(w, r)
+			slog.Info("Note endpoint not processed", slog.String("expected", "/note"), slog.String("received", r.URL.Path))
+			return
+		}
+
+		slog.Info("Processing DELETE note request")
+		handlers.HandleDeleteNote(w, r)
+	})
+
 	addr := fmt.Sprintf("%s:%s", cfg.ADDR, cfg.PORT)
 	slog.Info("Server is running.", slog.String("addr", "http://"+addr))
 	http.ListenAndServe(addr, mux)
