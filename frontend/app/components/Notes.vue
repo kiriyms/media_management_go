@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ro } from '@nuxt/ui/runtime/locale/index.js'
 import { ref, onMounted } from 'vue'
 
 interface Note {
@@ -149,10 +150,8 @@ onMounted(async () => {
         <div class="flex h-full">
             <UTabs :items="items" variant="link" class="gap-4 w-full h-full" :ui="{ content: 'h-full' }">
                 <template #note="{ item }">
-                    <div class="w-full h-full flex flex-col">
-                        <div class="w-full h-full">
-                            <div>{{ item.description }}</div>
-                        </div>
+                    <div class="w-full h-full flex flex-col justify-between gap-4">
+                        <UTextarea v-model="item.description" :ui="{ base: 'h-full resize-none', root: 'h-full' }" />
                         <div class="flex justify-between">
                             <UButton label="DELETE NOTE" color="error" />
                             <UButton label="SAVE CHANGES" color="success" />
