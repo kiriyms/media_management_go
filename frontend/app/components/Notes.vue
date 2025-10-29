@@ -120,14 +120,37 @@ const updateNote = async (id: string, newContent: string) => {
             }
         })
 
-        // Clear form
-        newNoteTitle.value = ''
-        showModal.value = false
+        // Refresh notes list
+        await fetchNotes()
+    } catch (error) {
+        console.error('Failed to update note:', error)
+    } finally {
+        pending.value = false
+    }
+}
+
+const deleteNote = async (id: string) => {
+    if (!authToken.value) {
+        return
+    }
+
+    pending.value = true
+    try {
+        const response = await $fetch('http://localhost:8080/note', {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${authToken.value}`,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                id: id,
+            }
+        })
 
         // Refresh notes list
         await fetchNotes()
     } catch (error) {
-        console.error('Failed to create note:', error)
+        console.error('Failed to delete note:', error)
     } finally {
         pending.value = false
     }
