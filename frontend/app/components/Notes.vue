@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { TabsItem } from '@nuxt/ui'
 import { ref, onMounted } from 'vue'
 
 interface Note {
@@ -80,6 +79,43 @@ const submitNewNote = async () => {
             body: {
                 title: newNoteTitle.value,
                 note: ' ',
+            }
+        })
+
+        // Clear form
+        newNoteTitle.value = ''
+        showModal.value = false
+
+        // Refresh notes list
+        await fetchNotes()
+    } catch (error) {
+        console.error('Failed to create note:', error)
+    } finally {
+        pending.value = false
+    }
+}
+
+const updateNote = async (id: string, newContent: string) => {
+    if (!authToken.value) {
+        return
+    }
+
+    let note = newContent
+    if (!note) {
+        note = ' '
+    }
+
+    pending.value = true
+    try {
+        const response = await $fetch('http://localhost:8080/note', {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${authToken.value}`,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                id: id,
+                note: note,
             }
         })
 
