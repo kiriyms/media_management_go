@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { ro } from '@nuxt/ui/runtime/locale/index.js'
 import { ref, onMounted } from 'vue'
 
 interface Note {
@@ -14,6 +13,7 @@ interface TabItem {
     label: string
     description: string
     slot: string
+    id: string
 }
 
 const pending = ref(false)
@@ -54,7 +54,8 @@ const fetchNotes = async () => {
         items.value = notesData.value?.map((note) => ({
             label: note.title,
             description: note.note,
-            slot: 'note'
+            slot: 'note',
+            id: note.id
         }))
         console.log('Populated items:', items.value)
     } catch (error) {
@@ -176,8 +177,8 @@ onMounted(async () => {
                     <div class="w-full h-full flex flex-col justify-between gap-4">
                         <UTextarea v-model="item.description" :ui="{ base: 'h-full resize-none', root: 'h-full' }" />
                         <div class="flex justify-between">
-                            <UButton label="DELETE NOTE" color="error" />
-                            <UButton label="SAVE CHANGES" color="success" />
+                            <UButton label="DELETE NOTE" @click="deleteNote(item.id)" color="error" />
+                            <UButton label="SAVE CHANGES" @click="updateNote(item.id, item.description)" color="success" />
                         </div>
                     </div>
                 </template>
