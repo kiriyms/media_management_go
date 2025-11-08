@@ -94,6 +94,33 @@ const submitNewLink = async () => {
     }
 }
 
+const deleteLink = async (id: string) => {
+    if (!authToken.value) {
+        return
+    }
+
+    pending.value = true
+    try {
+        const response = await $fetch('http://localhost:8080/link', {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${authToken.value}`,
+                'Content-Type': 'application/json'
+            },
+            body: {
+                id: id,
+            }
+        })
+
+        // Refresh notes list
+        await fetchLinks()
+    } catch (error) {
+        console.error('Failed to delete link:', error)
+    } finally {
+        pending.value = false
+    }
+}
+
 // Fetch links when component mounts
 onMounted(() => {
     console.log('Component mounted, fetching links...')
@@ -222,6 +249,7 @@ onMounted(() => {
                 <div class="text-xs text-white light:text-black">
                     {{ new Date(link.createdAt).toLocaleDateString() }}
                 </div>
+                <UIcon name="material-symbols:close-small-outline-rounded" class="cursor-pointer" @click="deleteLink(link.id)" />
             </li>
         </ul>
     </div>

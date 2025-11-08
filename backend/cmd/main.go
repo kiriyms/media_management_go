@@ -142,6 +142,19 @@ func main() {
 		handlers.HandleDeleteNote(w, r)
 	})
 
+	mux.HandleFunc("DELETE /link", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r)
+
+		if r.URL.Path != "/link" {
+			http.NotFound(w, r)
+			slog.Info("Link endpoint not processed", slog.String("expected", "/link"), slog.String("received", r.URL.Path))
+			return
+		}
+
+		slog.Info("Processing DELETE link request")
+		handlers.HandleDeleteLink(w, r)
+	})
+
 	addr := fmt.Sprintf("%s:%s", cfg.ADDR, cfg.PORT)
 	slog.Info("Server is running.", slog.String("addr", "http://"+addr))
 	http.ListenAndServe(addr, mux)

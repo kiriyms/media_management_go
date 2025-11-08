@@ -31,6 +31,10 @@ type PostLinkResponse struct {
 	ImgPath string `json:"img_path"`
 }
 
+type DeleteLinkRequest struct {
+	ID string `json:"id"`
+}
+
 type PostNoteRequest struct {
 	Title string `json:"title"`
 	Note  string `json:"note"`
@@ -164,6 +168,34 @@ func HandlePostLink(w http.ResponseWriter, r *http.Request) {
 		ImgPath: req.ImgPath,
 	}
 	writeJSON(w, resp, http.StatusCreated)
+}
+
+func HandleDeleteLink(w http.ResponseWriter, r *http.Request) {
+	if _, ok := requireAuth(w, r); !ok {
+		return // requireAuth already wrote error response
+	}
+
+	var req DeleteLinkRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSONError(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	if req.ID == "" {
+		writeJSONError(w, "ID is required", http.StatusBadRequest)
+		return
+	}
+
+	if err := database.DeleteLink(req.ID); err != nil {
+		writeJSONError(w, fmt.Sprintf("Failed to delete note: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	writeJSON(w, struct {
+		Message string `json:"message"`
+	}{
+		Message: "Link deleted successfully",
+	}, http.StatusOK)
 }
 
 func HandleGetNote(w http.ResponseWriter, r *http.Request) {
