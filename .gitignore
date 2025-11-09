@@ -7,6 +7,7 @@
 # ---- Environment / Config ----
 .env
 .env.*
+.fe.env
 !.env.example
 
 # ---- Dependency directories ----
