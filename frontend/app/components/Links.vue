@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+const config = useRuntimeConfig()
+
 interface Link {
     id: string;
     link: string;
@@ -35,7 +37,7 @@ const authToken = computed(() => {
 })
 
 // Use Nuxt's built-in state management with useFetch
-const { data: linksData, refresh } = useFetch<{ links: Link[] }>('http://localhost:8080/link', {
+const { data: linksData, refresh } = useFetch<{ links: Link[] }>(`${config.public.serverUrl}/link`, {
     headers: computed(() => ({
         'Authorization': `Bearer ${authToken.value}`
     })),
@@ -68,7 +70,7 @@ const submitNewLink = async () => {
 
     pending.value = true
     try {
-        const response = await $fetch('http://localhost:8080/link', {
+        const response = await $fetch(`${config.public.serverUrl}/link`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${authToken.value}`,
@@ -101,7 +103,7 @@ const deleteLink = async (id: string) => {
 
     pending.value = true
     try {
-        const response = await $fetch('http://localhost:8080/link', {
+        const response = await $fetch(`${config.public.serverUrl}/link`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${authToken.value}`,

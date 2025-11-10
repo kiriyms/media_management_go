@@ -4,5 +4,10 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   
   css: ['~/assets/css/main.css'],
+  runtimeConfig: {
+    public: {
+      serverUrl: process.env.NUXT_PUBLIC_SERVER_URL,
+    }
+  },
   modules: ['@nuxt/content', '@nuxt/ui']
 })

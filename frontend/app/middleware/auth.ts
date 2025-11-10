@@ -1,6 +1,8 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
     if (import.meta.server) return
 
+    const config = useRuntimeConfig()
+
     // const token = useCookie('session_token').value
     const token = localStorage.getItem('session_token')
     
@@ -9,7 +11,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
       return navigateTo('/')
     }
 
-    const res = await fetch('http://localhost:8080/login', {
+    const res = await fetch(`${config.public.serverUrl}/login`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,

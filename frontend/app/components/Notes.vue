@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
+const config = useRuntimeConfig()
+
 interface Note {
     id: string
     title: string
@@ -30,7 +32,7 @@ const authToken = computed(() => {
     return null
 })
 
-const { data: notesData, refresh } = useFetch('http://localhost:8080/note', {
+const { data: notesData, refresh } = useFetch(`${config.public.serverUrl}/note`, {
     headers: computed(() => ({
         'Authorization': `Bearer ${authToken.value}`
     })),
@@ -72,7 +74,7 @@ const submitNewNote = async () => {
 
     pending.value = true
     try {
-        const response = await $fetch('http://localhost:8080/note', {
+        const response = await $fetch(`${config.public.serverUrl}/note`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${authToken.value}`,
@@ -109,7 +111,7 @@ const updateNote = async (id: string, newContent: string) => {
 
     pending.value = true
     try {
-        const response = await $fetch('http://localhost:8080/note', {
+        const response = await $fetch(`${config.public.serverUrl}/note`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${authToken.value}`,
@@ -137,7 +139,7 @@ const deleteNote = async (id: string) => {
 
     pending.value = true
     try {
-        const response = await $fetch('http://localhost:8080/note', {
+        const response = await $fetch(`${config.public.serverUrl}/note`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${authToken.value}`,

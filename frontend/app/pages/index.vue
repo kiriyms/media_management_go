@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
+const config = useRuntimeConfig()
+
 const passkey = ref('');
 const isLoading = ref(false);
 const errorMessage = ref('');
@@ -12,7 +14,7 @@ const handleSubmit = async (e: Event) => {
     errorMessage.value = ''; // Clear any previous errors
     
     try {
-        const res = await fetch('http://localhost:8080/login', {
+        const res = await fetch(`${config.public.serverUrl}/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -34,7 +36,7 @@ const handleSubmit = async (e: Event) => {
             errorMessage.value = data?.error || 'Authentication failed';
         }
     } catch (err) {
-        errorMessage.value = 'Network error: Unable to connect to server';
+        errorMessage.value = `Network error: Unable to connect to server; ${err}`;
     } finally {
         isLoading.value = false;
     }
