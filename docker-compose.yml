@@ -8,6 +8,8 @@ services:
       - ./backend/database:/app/database
     env_file:
       - ./.env
+    ports:
+      - "8080:8080"
     networks:
       - app-network
 
